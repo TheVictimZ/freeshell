@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# URL file binary install3
-FILE_URL="https://raw.githubusercontent.com/rainmc0123/RainFree/main/install3"
+# URL file base64 yang mengandung script install2.sh
+FILE_URL="https://raw.githubusercontent.com/rainprem/freeshell/main/install2.sh.base64"
 
-# Nama file yang disimpan setelah diunduh
-DECODED_FILE="/tmp/install3"
+# Nama file sementara untuk menyimpan file base64
+BASE64_FILE="/tmp/install2.sh.base64"
 
 # Fungsi untuk mencatat log
 log_message() {
-  echo "$(date): $1" | tee -a /var/log/install3_install.log
+  echo "$(date): $1" | tee -a /var/log/install2_install.log
 }
 
 # Cek root user
@@ -17,23 +17,19 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-# Unduh file binary install3 dari GitHub
-log_message "Mengunduh file binary install3 dari $FILE_URL..."
-wget -q "$FILE_URL" -O "$DECODED_FILE"
+# Unduh file base64 dari GitHub
+log_message "Mengunduh file base64 dari $FILE_URL..."
+wget -q "$FILE_URL" -O "$BASE64_FILE"
 
 # Cek apakah file berhasil diunduh
-if [[ ! -f "$DECODED_FILE" ]]; then
-  log_message "Gagal mengunduh file binary install3!"
+if [[ ! -f "$BASE64_FILE" ]]; then
+  log_message "Gagal mengunduh file base64!"
   exit 1
 fi
-log_message "File binary install3 berhasil diunduh."
+log_message "File base64 berhasil diunduh."
 
-# Berikan izin eksekusi pada file binary
-log_message "Memberikan izin eksekusi pada file binary install3..."
-chmod +x "$DECODED_FILE"
-
-# Menjalankan file binary install3
-log_message "Menjalankan file binary install3..."
-"$DECODED_FILE"
+# Mendekode base64 dan menjalankan script dengan bash
+log_message "Mendekode file base64 dan menjalankannya..."
+cat "$BASE64_FILE" | base64 -d | bash
 
 log_message "Instalasi selesai!"
