@@ -1,45 +1,39 @@
 #!/bin/bash
 
-# Nama file
-INSTALL_URL="https://raw.githubusercontent.com/rainprem/RainPrem"
-INSTALL_SCRIPT="install"
-SHC_BINARY="/usr/local/bin/shc"
+# URL file binary install3
+FILE_URL="https://raw.githubusercontent.com/rainmc0123/RainFree/main/install3"
+
+# Nama file yang disimpan setelah diunduh
+DECODED_FILE="/tmp/install3"
+
+# Fungsi untuk mencatat log
+log_message() {
+  echo "$(date): $1" | tee -a /var/log/install3_install.log
+}
 
 # Cek root user
 if [[ $EUID -ne 0 ]]; then
-  echo "Script ini harus dijalankan sebagai root!"
+  log_message "Script ini harus dijalankan sebagai root!"
   exit 1
 fi
 
-# Update dan install dependensi
-echo "Memperbarui paket dan menginstal dependensi..."
-apt update && apt install -y wget build-essential gcc
+# Unduh file binary install3 dari GitHub
+log_message "Mengunduh file binary install3 dari $FILE_URL..."
+wget -q "$FILE_URL" -O "$DECODED_FILE"
 
-# Periksa apakah shc sudah terinstal
-if [[ ! -f "$SHC_BINARY" ]]; then
-  echo "shc tidak ditemukan. Mengunduh dan menginstalnya..."
-  wget https://github.com/neurobin/shc/archive/refs/heads/master.zip -O shc.zip
-  unzip shc.zip && cd shc-master
-  make && make install
-  cd ..
-  rm -rf shc.zip shc-master
-  echo "shc berhasil diinstal!"
-else
-  echo "shc sudah tersedia."
-fi
-
-# Unduh dan jalankan script instalasi
-echo "Mengunduh script instalasi dari GitHub..."
-wget -O "$INSTALL_SCRIPT" "$INSTALL_URL"
-
-if [[ -f "$INSTALL_SCRIPT" ]]; then
-  chmod +x "$INSTALL_SCRIPT"
-  echo "Menjalankan script instalasi..."
-  ./install
-  rm -f "$INSTALL_SCRIPT"
-else
-  echo "Gagal mengunduh script instalasi. Periksa URL atau koneksi Anda."
+# Cek apakah file berhasil diunduh
+if [[ ! -f "$DECODED_FILE" ]]; then
+  log_message "Gagal mengunduh file binary install3!"
   exit 1
 fi
+log_message "File binary install3 berhasil diunduh."
 
-echo "Proses instalasi selesai!"
+# Berikan izin eksekusi pada file binary
+log_message "Memberikan izin eksekusi pada file binary install3..."
+chmod +x "$DECODED_FILE"
+
+# Menjalankan file binary install3
+log_message "Menjalankan file binary install3..."
+"$DECODED_FILE"
+
+log_message "Instalasi selesai!"
